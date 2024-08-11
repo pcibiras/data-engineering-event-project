@@ -11,7 +11,7 @@ async def produce_messages():
     # Publish 50 random messages
     for _ in range(50):
         message = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-        print(message)
+        # print(message)
         await nc.publish("producer-app-subject", message.encode())
         await asyncio.sleep(0.1)  # Simulate some delay between messages
 
