@@ -49,3 +49,28 @@ resource "docker_container" "nats" {
     external = 4222
   }
 }
+
+resource "docker_image" "postgres-14-image" {
+  name = "postgres:14.0"
+}
+
+resource "docker_container" "postgres-container" {
+  image = docker_image.postgres-14-image.name  # Use the PostgreSQL image version you prefer
+  name  = "postgres_db"
+  networks_advanced {
+    name = docker_network.kafka_network.name
+  }
+    ports {
+    internal = 5432
+    external = 5432
+  }
+    volumes {
+    host_path = "/data"
+    container_path = "/var/lib/postgresql/data"
+  }
+  env [
+    "POSTGRES_USER = {var.postgres_user}",
+    "POSTGRES_PASSWORD=${var.postgres_password}",
+    "POSTGRES_DB=${var.postgres_db}" 
+  ]
+}
