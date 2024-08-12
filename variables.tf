@@ -1,11 +1,15 @@
-# variable "postgres_user" {
-#     description = "The PostgreSQL username"
-# }
+variable "maria_db_user" {
+    description = "The MariaDb username"
+}
 
-# variable "postgres_password" {
-#     description = "The PostgreSQL password"
-# }
+variable "maria_db_password" {
+    description = "The MariaDb password"
+}
 
-# variable "postgres_db" {
-#   description = "The PostgreSQL database name"
-# }
+variable "maria_db_db" {
+  description = "The MariaDb database name"
+}
+
+variable "maria_db_root_password" {
+  description = "The MariaDb root psw"
+}
