@@ -57,5 +57,12 @@ resource "docker_container" "mariadb_db" {
     "MYSQL_USER=${var.maria_db_user}",
     "MYSQL_PASSWORD=${var.maria_db_password}"
   ]
-
 }
+
+resource "docker_image" "consumer_app" {
+  name = "consumer-app:latest"
+  build {
+    context    = "./consumer-app"
+  }
+}
+
