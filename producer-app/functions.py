@@ -8,7 +8,7 @@ import json
 async def produce_messages():
     # Connect to NATS
     nc = NATS()
-    await nc.connect("nats://127.0.0.1:4222")  # Use the NATS service name as the hostname if running in Docker
+    await nc.connect("nats://nats:4222")
 
     # Publish 50 random messages
     for _ in range(50):
