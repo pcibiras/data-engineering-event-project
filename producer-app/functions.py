@@ -2,6 +2,8 @@ from nats.aio.client import Client as NATS
 import asyncio
 import random
 import string
+from datetime import datetime
+import json
 
 async def produce_messages():
     # Connect to NATS
@@ -10,9 +12,15 @@ async def produce_messages():
 
     # Publish 50 random messages
     for _ in range(50):
-        message = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-        # print(message)
-        await nc.publish("producer-app-subject", message.encode())
+        message_content = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+        created_at = datetime.now().isoformat()
+
+        message = {
+            "content": message_content,
+            "created_at": created_at
+        }
+
+        await nc.publish("producer-app-subject", json.dumps(message).encode())
         await asyncio.sleep(0.1)  # Simulate some delay between messages
 
     await nc.close()

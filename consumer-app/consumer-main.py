@@ -40,10 +40,15 @@ async def run():
         subject = msg.subject
         data = msg.data.decode()
         logging.info(f"Received a message on '{subject}': {data}")
-
+        content = data["content"]
+        created_at = data["created_at"]
 
         try:
-            cursor.execute("INSERT INTO messages (content) VALUES (?)", (data,))
+            cursor.execute(
+                "INSERT INTO messages (content, created_at) VALUES (?)",
+                (content, created_at)
+            )
+            
             conn.commit()
             logging.info("Message saved to database")
         except mariadb.Error as e:
