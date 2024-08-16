@@ -9,7 +9,7 @@ RUN apt-get update && \
     gcc \
     g++ \
     make \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*  
 
 COPY requirements.txt requirements.txt 
 

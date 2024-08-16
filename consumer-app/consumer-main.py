@@ -1,36 +1,60 @@
 import asyncio
 from nats.aio.client import Client as NATS
 import mariadb
+import logging
 import os
+import time
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
+
 
 mysql_user = os.getenv('MYSQL_USER')
 mysql_password = os.getenv('MYSQL_PASSWORD')
 mysql_database = os.getenv('MYSQL_DATABASE')
 
+
 async def run():
     nc = NATS()
-    await nc.connect(servers=["nats://nats:4222"])
+    try:
+        await nc.connect(servers=["nats://nats:4222"])
+        logging.info("Connected to NATS server")
+    except Exception as e:
+        logging.error(f"Failed to connect to Nats: {e}")
 
-    conn = mariadb.connect(
-        user=mysql_user,
-        password=mysql_password,
-        host="127.0.0.1",
-        port="3306",
-        database=mysql_database
-    ) 
-    cursor = conn.cursor()
+    try:
+        conn = mariadb.connect(
+            user=mysql_user,
+            password=mysql_password,
+            host="mariadb_db",
+            port=3306,
+            database=mysql_database
+        ) 
+        cursor = conn.cursor()
+        logging.info("Connection to db successful")
+
+    except mariadb.Error as e:
+        logging.error(f"Error connecting to MariaDB Platform: {e}")
+
 
     async def message_handler(msg):
         subject = msg.subject
         data = msg.data.decode()
-        print(f"Received a message on '{subject}': {data}")
+        logging.info(f"Received a message on '{subject}': {data}")
 
-        cursor.execute("INSERT INTO messages (content) VALUES (?)", (data,))
-        conn.commit()
+
+        try:
+            cursor.execute("INSERT INTO messages (content) VALUES (?)", (data,))
+            conn.commit()
+            logging.info("Message saved to database")
+        except mariadb.Error as e:
+            logging.error(f"Failed to save message to database: {e}")
 
     await nc.subscribe("producer-app-subject", cb=message_handler)
 
     await asyncio.Event().wait()
 
 if __name__ == "__main__":
+    logging.info("Starting consumer app")
+    logging.info("Waiting for the db container")
+    time.sleep(30)
     asyncio.run(run())
