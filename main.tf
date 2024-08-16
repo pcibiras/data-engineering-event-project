@@ -30,6 +30,9 @@ resource "docker_container" "nats" {
     internal = 4222
     external = 4222
   }
+  depends_on = [
+    docker_network.solution_network
+  ]
 }
 
 resource "docker_image" "mariadb" {
@@ -57,19 +60,22 @@ resource "docker_container" "mariadb_db" {
     "MYSQL_USER=${var.maria_db_user}",
     "MYSQL_PASSWORD=${var.maria_db_password}"
   ]
+  depends_on = [
+    docker_network.solution_network
+  ]
 }
 
 resource "docker_image" "consumer_app" {
   name = "consumer-app:latest"
   build {
-    context    = "./consumer-app"
+    context   = "./consumer-app"
   }
 }
 
-resource "docker_image" "producer_app" {
+resource "docker_image" "producer_flask_app" {
   name = "producer-app:latest"
   build {
-    context    = "./producer-app"
+    context   = "./producer-app"
   }
 }
 
@@ -92,4 +98,30 @@ resource "docker_container" "consumer_app" {
     internal = 8080
     external = 8080
   }
+  depends_on = [
+    docker_network.solution_network, docker_container.consumer_app
+  ]
+}
+
+resource "docker_container" "producer_flask_app" {
+  name  = "producer-flask-app-container"
+  image = docker_image.producer_flask_app.name
+
+  networks_advanced {
+    name = docker_network.solution_network.name
+  }
+
+  ports {
+    internal = 5000
+    external = 5000
+  }
+
+  depends_on = [
+    docker_network.solution_network
+  ]
+}
+
+output "flask_app_url" {
+  description = "URL of the Flask application"
+  value       = "http://${docker_container.producer_flask_app.name}:5000"
 }
