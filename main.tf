@@ -23,7 +23,7 @@ resource "docker_container" "nats" {
   image = docker_image.nats.name
   name  = "nats"
   networks_advanced {
-  name = docker_network.solution_network.name
+    name = docker_network.solution_network.name
   }
 
   ports {
@@ -66,3 +66,30 @@ resource "docker_image" "consumer_app" {
   }
 }
 
+resource "docker_image" "producer_app" {
+  name = "producer-app:latest"
+  build {
+    context    = "./producer-app"
+  }
+}
+
+
+resource "docker_container" "consumer_app" {
+  name  = "consumer-app-container"
+  image = docker_image.consumer_app.name
+
+  networks_advanced {
+    name = docker_network.solution_network.name
+  }
+
+  env = [
+    "MYSQL_USER=${var.maria_db_user}",
+    "MYSQL_PASSWORD=${var.maria_db_password}",
+    "MYSQL_DATABASE=${var.maria_db_db}",
+  ]
+
+  ports {
+    internal = 8080
+    external = 8080
+  }
+}
