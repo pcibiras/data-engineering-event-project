@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Submission Confirmation</title>
+</head>
+
+<body>
+    {% extends "bootstrap/base.html" %}
+
+    {% block content %}
+    <div class="container">
+        <h1 class="mt-5">Submission Successful</h1>
+        <p class="mt-4">Thank you, {{ data['name'] }} {{ data['surname'] }}, for submitting your information.</p>
+        <p>We will contact you at {{ data['email'] }}.</p>
+        <a href="/" class="btn btn-primary mt-3">Go Back to Form</a>
+    </div>
+    {% endblock %}
+</body>
+
+</html>

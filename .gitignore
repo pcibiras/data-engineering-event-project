@@ -5,3 +5,4 @@ terraform.tfstate.backup
 terraform.tfstate
 .env
 .terraform.lock.hcl
+producer-app/__pycache__/
