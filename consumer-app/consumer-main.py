@@ -38,23 +38,43 @@ async def run():
 
 
     async def message_handler(msg):
+
         subject = msg.subject
-        message = msg.data.decode()
-        logging.info(f"Received a message on '{subject}': {message}")
-        msg_data = json.loads(message)
-        content = msg_data["content"]
-        created_at = msg_data["created_at"]
+        if subject == "producer-app-subject":
+            message = msg.data.decode()
+            logging.info(f"Received a message on '{subject}': {message}")
+            msg_data = json.loads(message)
+            content = msg_data["content"]
+            created_at = msg_data["created_at"]
 
-        try:
-            cursor.execute(
-                "INSERT INTO messages (content, created_at) VALUES (?, ?)",
-                (content, created_at)
-            )
+            try:
+                cursor.execute(
+                    "INSERT INTO messages (content, created_at) VALUES (?, ?)",
+                    (content, created_at)
+                )
 
-            conn.commit()
-            logging.info("Message saved to database")
-        except mariadb.Error as e:
-            logging.error(f"Failed to save message to database: {e}")
+                conn.commit()
+                logging.info("Message saved to database")
+            except mariadb.Error as e:
+                logging.error(f"Failed to save message to database: {e}")
+
+        else:
+            message = msg.data.decode()
+            logging.info(f"Received a message on '{subject}': {message}")
+            msg_data = json.loads(message)
+            name = msg_data["name"]
+            surname = msg_data["surname"]
+            email = msg_data["email"]
+            created_at = msg_data["created_at"]
+
+            try:
+                cursor.execute(
+                    "INSERT INTO users (name, surname, email, created_at) VALUES (?, ?, ?, ?)",
+                    (name, surname, email, created_at)
+                )
+                conn.commit()
+            except mariadb.Error as e:
+                print(f"Failed to save message to database: {e}")
 
     await nc.subscribe("producer-app-subject", cb=message_handler)
 
