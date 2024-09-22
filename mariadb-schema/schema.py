@@ -20,6 +20,15 @@ class Message(Base):
     content = Column(Text, nullable=False)
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
 
+class Users(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(Text, nullable=False)
+    surname = Column(Text, nullable=False)
+    email = Column(Text, nullable=False)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+
+
 def create_schema(database_url):
     try:
         engine = create_engine(database_url)
