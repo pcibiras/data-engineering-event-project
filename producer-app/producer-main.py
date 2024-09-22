@@ -1,5 +1,5 @@
 import asyncio
-from flask import Flask, jsonify, request, render_template, redirect
+from flask import Flask, request, render_template, redirect
 from functions import *
 from flask_bootstrap import Bootstrap
 
@@ -44,9 +44,9 @@ def submit():
             "created_at": datetime.now().isoformat()
         }
 
-        # loop = asyncio.new_event_loop()
-        # asyncio.set_event_loop(loop)
-        # loop.run_until_complete(publish_to_nats(data))
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(publish_to_nats(data))
 
     return render_template("submit.html", data=data)
 
